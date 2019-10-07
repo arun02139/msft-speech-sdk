@@ -35,6 +35,11 @@ public class HelloWorld : MonoBehaviour
 
         Debug.Log($"HelloWorld.ButtonClick: config.SpeechRecognitionLanguage={config.SpeechRecognitionLanguage}");
 
+        if(outputText != null)
+        {
+            message = message + ".";
+        }
+
         // Make sure to dispose the recognizer after use!
         using (var recognizer = new SpeechRecognizer(config))
         {
