@@ -2,7 +2,7 @@
 using UnityEngine.UI;
 using Microsoft.CognitiveServices.Speech;
 #if PLATFORM_ANDROID
-//using UnityEngine.Android;
+using UnityEngine.Android;
 #endif
 #if PLATFORM_IOS
 using UnityEngine.iOS;
@@ -38,8 +38,6 @@ public class HelloWorld : MonoBehaviour
         // Make sure to dispose the recognizer after use!
         using (var recognizer = new SpeechRecognizer(config))
         {
-            Debug.Log($"HelloWorld.ButtonClick: recognizer.EndpointId={recognizer.EndpointId}");
-
             lock (threadLocker)
             {
                 waitingForReco = true;
@@ -52,6 +50,8 @@ public class HelloWorld : MonoBehaviour
             // shot recognition like command or query.
             // For long-running multi-utterance recognition, use StartContinuousRecognitionAsync() instead.
             var result = await recognizer.RecognizeOnceAsync().ConfigureAwait(false);
+
+            Debug.Log($"HelloWorld.ButtonClick: recognizer.EndpointId={recognizer.EndpointId}");
 
             // Checks result.
             string newMessage = string.Empty;
@@ -96,10 +96,10 @@ public class HelloWorld : MonoBehaviour
             // Request to use the microphone, cf.
             // https://docs.unity3d.com/Manual/android-RequestingPermissions.html
             message = "Waiting for mic permission";
-            //if (!Permission.HasUserAuthorizedPermission(Permission.Microphone))
-            //{
-            //    Permission.RequestUserPermission(Permission.Microphone);
-            //}
+            if (!Permission.HasUserAuthorizedPermission(Permission.Microphone))
+            {
+                Permission.RequestUserPermission(Permission.Microphone);
+            }
 #elif PLATFORM_IOS
             if (!Application.HasUserAuthorization(UserAuthorization.Microphone))
             {
@@ -116,11 +116,11 @@ public class HelloWorld : MonoBehaviour
     void Update()
     {
 #if PLATFORM_ANDROID
-        //if (!micPermissionGranted && Permission.HasUserAuthorizedPermission(Permission.Microphone))
-        //{
+        if (!micPermissionGranted && Permission.HasUserAuthorizedPermission(Permission.Microphone))
+        {
             micPermissionGranted = true;
             message = "Click button to recognize speech";
-        //}
+        }
 #elif PLATFORM_IOS
         if (!micPermissionGranted && Application.HasUserAuthorization(UserAuthorization.Microphone))
         {
